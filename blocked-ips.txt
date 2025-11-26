@@ -1,2 +1,8 @@
 # IPs bloqueadas desde blocked.dns.hayahora.futbol
-# Este archivo se actualiza automáticamente cada 5 minutos
+# Generado: 2025-11-26T12:04:36.748109
+# Total: 4 IPs
+#
+172.67.196.60
+172.67.200.91
+172.67.220.241
+172.67.69.232
