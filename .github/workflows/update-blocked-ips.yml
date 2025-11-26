@@ -1,0 +1,43 @@
+name: Update Blocked IPs
+
+on:
+  schedule:
+    # Ejecutar cada 5 minutos
+    - cron: '*/5 * * * *'
+  # Permitir ejecución manual
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Descargar el código del repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      # Configurar Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      # Instalar dependencias
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      
+      # Ejecutar el script
+      - name: Generate blocked IPs list
+        run: python generate_blocked_ips.py
+      
+      # Configurar git
+      - name: Configure git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+      
+      # Commit y push si hay cambios
+      - name: Commit and push changes
+        run: |
+          git add blocked-ips.txt
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update blocked IPs - $(date -u +'%Y-%m-%d %H:%M:%S UTC')" && git push)
