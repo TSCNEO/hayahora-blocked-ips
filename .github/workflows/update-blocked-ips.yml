@@ -5,6 +5,9 @@ on:
     - cron: '*/5 * * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -24,13 +27,15 @@ jobs:
       - name: Generate blocked IPs list
         run: python generate_blocked_ips.py
       
-      - name: Configure git
+      - name: Commit files
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://${{ secrets.FINE_GRAINED_PAT }}@github.com/TSCNEO/hayahora-blocked-ips.git
-      
-      - name: Commit and push changes
-        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
           git add blocked-ips.txt
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update blocked IPs - $(date -u +'%Y-%m-%d %H:%M:%S UTC')" && git push origin main)
+          git diff --quiet && git diff --staged --quiet || git commit -m "Update blocked IPs - $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+      
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
