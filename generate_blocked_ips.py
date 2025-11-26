@@ -27,10 +27,6 @@ def resolve_all_ips():
 def write_ips_file(ips):
     """Escribe las IPs en el archivo"""
     with open(OUTPUT_FILE, 'w') as f:
-        f.write(f"# IPs bloqueadas desde {DOMAIN}\n")
-        f.write(f"# Generado: {datetime.now().isoformat()}\n")
-        f.write(f"# Total: {len(ips)} IPs\n")
-        f.write("#\n")
         for ip in sorted(ips):
             f.write(f"{ip}\n")
     print(f"✓ Archivo {OUTPUT_FILE} generado con {len(ips)} IPs")
