@@ -38,6 +38,9 @@ jobs:
       
       # Commit y push si hay cambios
       - name: Commit and push changes
+        if: success()
         run: |
           git add blocked-ips.txt
           git diff --quiet && git diff --staged --quiet || (git commit -m "Update blocked IPs - $(date -u +'%Y-%m-%d %H:%M:%S UTC')" && git push)
+        env:
+          GITHUB_TOKEN: ${{ secrets.PUSH_TOKEN }}
