@@ -35,12 +35,10 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-      
+          
       # Commit y push si hay cambios
       - name: Commit and push changes
         if: success()
         run: |
           git add blocked-ips.txt
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update blocked IPs - $(date -u +'%Y-%m-%d %H:%M:%S UTC')" && git push)
-        env:
-          GITHUB_TOKEN: ${{ secrets.PUSH_TOKEN }}
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update blocked IPs - $(date -u +'%Y-%m-%d %H:%M:%S UTC')" && git push https://x-access-token:${{ secrets.PUSH_TOKEN }}@github.com/TSCNEO/hayahora-blocked-ips.git)
