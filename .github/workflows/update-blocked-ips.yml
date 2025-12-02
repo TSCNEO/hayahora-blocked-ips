@@ -27,11 +27,16 @@ jobs:
       - name: Generate blocked IPs list
         run: python generate_blocked_ips.py
       
+      - name: Generate LastUpdate timestamp
+        run: |
+          date -u +'%H%M%S-%y%m%d' > LastUpdate.txt
+          echo "Timestamp generated: $(cat LastUpdate.txt)"
+      
       - name: Commit files
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add blocked-ips.txt
+          git add blocked-ips.txt LastUpdate.txt
           git diff --quiet && git diff --staged --quiet || git commit -m "Update blocked IPs - $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
       
       - name: Push changes
