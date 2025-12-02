@@ -150,7 +150,7 @@ Para redirigir el tráfico de estas IPs por una VPN, añade reglas de routing:
 
 ## 🤝 Créditos
 
-- **Autor**: TSCNEO
+- **Autor**: TSCNEO (IA Assisted)
 - **Fuente de datos**: [hayahora.futbol](https://hayahora.futbol)
 - **Repositorio**: [hayahora-blocked-ips](https://github.com/TSCNEO/hayahora-blocked-ips)
 
