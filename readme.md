@@ -16,6 +16,17 @@ El archivo `blocked-ips.txt` contiene una IP por línea, listo para importar a c
 - **Proxy / Load Balancer**
 - Cualquier otra solución de networking
 
+### Ejemplo práctico: Mikrotik RouterOS
+
+Se incluye un **script completo y listo para usar** que sincroniza automáticamente las IPs bloqueadas en tu router Mikrotik con detección inteligente de cambios.
+
+📁 **[Ver script y documentación en `/Mikrotik/`](./Mikrotik/)**
+
+Características del script:
+- ✅ Sincronización automática cada 15 minutos
+- ✅ Optimizado: solo descarga cuando hay cambios
+- ✅ Instalación en un solo comando
+- ✅ Documentación completa incluida
 
 ## Automatización
 
