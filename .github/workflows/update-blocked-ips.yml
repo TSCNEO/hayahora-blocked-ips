@@ -27,16 +27,21 @@ jobs:
       - name: Generate blocked IPs list
         run: python generate_blocked_ips.py
       
-      - name: Generate LastUpdate timestamp
+      - name: Check for changes and generate timestamp
         run: |
-          TZ='Europe/Madrid' date +'%H%M%S-%y%m%d' > LastUpdate.txt
-          echo "Timestamp generated: $(cat LastUpdate.txt)"
+          git add blocked-ips.txt
+          if ! git diff --staged --quiet; then
+            echo "Changes detected, generating LastUpdate.txt"
+            TZ='Europe/Madrid' date +'%H%M%S-%y%m%d' > LastUpdate.txt
+            git add LastUpdate.txt
+          else
+            echo "No changes in IPs, skipping LastUpdate.txt"
+          fi
       
       - name: Commit files
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add blocked-ips.txt LastUpdate.txt
           git diff --quiet && git diff --staged --quiet || git commit -m "Update blocked IPs - $(TZ='Europe/Madrid' date +'%Y-%m-%d %H:%M:%S CET')"
       
       - name: Push changes
