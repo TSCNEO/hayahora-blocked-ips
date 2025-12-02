@@ -132,15 +132,76 @@ Verifica conectividad HTTPS:
 
 ## 🔗 Integración con VPN
 
-Para redirigir el tráfico de estas IPs por una VPN, añade reglas de routing:
+Para redirigir el tráfico de estas IPs por una VPN (WireGuard, OpenVPN, etc.), **primero necesitas tener configurada tu conexión VPN** (ver tutorial de configuración completa al final de esta sección), y luego crear una tabla de enrutamiento dedicada con las reglas correspondientes.
+
+### Configuración completa paso a paso
+
+#### 1. Crear tabla de enrutamiento dedicada
 
 ```
-# Ejemplo: Marcar paquetes
-/ip firewall mangle add chain=prerouting dst-address-list=IPsBloqueadas action=mark-routing new-routing-mark=VPN_TRAFFIC
-
-# Ejemplo: Ruta por VPN
-/ip route add dst-address-list=IPsBloqueadas gateway=TU_VPN_GATEWAY routing-mark=VPN_TRAFFIC
+/routing table add name=VPN-TABLE fib
 ```
+
+#### 2. Configurar NAT/Masquerade para el túnel VPN
+
+```
+/ip firewall nat add chain=srcnat out-interface=TU_INTERFAZ_VPN action=masquerade comment="NAT para trafico VPN"
+```
+
+*(Reemplaza `TU_INTERFAZ_VPN` con el nombre de tu interfaz: `WG01`, `ovpn-out1`, etc.)*
+
+#### 3. Añadir ruta por defecto en la tabla VPN
+
+```
+/ip route add dst-address=0.0.0.0/0 gateway=TU_INTERFAZ_VPN routing-table=VPN-TABLE comment="Ruta por VPN"
+```
+
+#### 4. Marcar el tráfico destinado a IPs bloqueadas
+
+```
+/ip firewall mangle add chain=prerouting dst-address-list=IPsBloqueadas action=mark-routing new-routing-mark=VPN-TABLE passthrough=no comment="Trafico a IPs bloqueadas por VPN"
+```
+
+### Verificación
+
+Para comprobar que el tráfico se está marcando correctamente:
+
+```
+# Ver paquetes marcados en mangle
+/ip firewall mangle print stats
+
+# Ver rutas activas en la tabla VPN
+/ip route print where routing-table=VPN-TABLE
+
+# Verificar NAT
+/ip firewall nat print stats
+```
+
+### Ejemplo completo con nombres reales
+
+```
+# Ejemplo con WireGuard (interfaz WG01-Windscribe)
+/routing table add name=FIB-WG01 fib
+/ip firewall nat add chain=srcnat out-interface=WG01-Windscribe action=masquerade
+/ip route add dst-address=0.0.0.0/0 gateway=WG01-Windscribe routing-table=FIB-WG01
+/ip firewall mangle add chain=prerouting dst-address-list=IPsBloqueadas action=mark-routing new-routing-mark=FIB-WG01 passthrough=no
+```
+
+### Troubleshooting rutas
+
+Si el tráfico no sale por la VPN:
+
+```
+# Verificar que las IPs están en la lista
+/ip firewall address-list print where list="IPsBloqueadas"
+
+# Hacer traceroute a una IP bloqueada
+/tool traceroute 172.67.196.60
+
+# Ver logs de conexión
+/log print where topics~"firewall"
+```
+
 
 ## 📝 Requisitos
 
@@ -153,7 +214,7 @@ Para redirigir el tráfico de estas IPs por una VPN, añade reglas de routing:
 - **Autor**: TSCNEO (IA Assisted)
 - **Fuente de datos**: [hayahora.futbol](https://hayahora.futbol)
 - **Repositorio**: [hayahora-blocked-ips](https://github.com/TSCNEO/hayahora-blocked-ips)
-
+- **Tutorial completo VPN + Mikrotik: [Manual Mikrotik integración VPN Windscribe WireGuard](https://foro.adslzone.net/mikrotik.199/manual-mikrotik-integracion-vpn-windscribe-wireguard.601074/)
 ## 📄 Licencia
 
 MIT
@@ -161,4 +222,3 @@ MIT
 ---
 
 **Nota**: Este script está diseñado para uso con el repositorio hayahora-blocked-ips que monitoriza bloqueos de IPs en España durante eventos de LaLiga.
-```
