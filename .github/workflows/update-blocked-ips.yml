@@ -32,7 +32,7 @@ jobs:
           git add blocked-ips.txt
           if ! git diff --staged --quiet; then
             echo "Changes detected, generating LastUpdate.txt"
-            TZ='Europe/Madrid' date +'%H%M%S-%y%m%d' > LastUpdate.txt
+            TZ='Europe/Madrid' date +"%Y%m%d%H%M" > LastUpdate.txt
             git add LastUpdate.txt
           else
             echo "No changes in IPs, skipping LastUpdate.txt"
